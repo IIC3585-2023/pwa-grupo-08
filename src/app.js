@@ -1,4 +1,6 @@
 import "./style.css";
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc } from 'firebase/firestore/lite';
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
