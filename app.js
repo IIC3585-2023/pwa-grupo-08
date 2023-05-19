@@ -42,7 +42,7 @@ async function whriteNewEntry(title, content, signed, highlight) {
 async function getHighlights() {
   try {
     const q = query(
-      collection(db, "entry-test-v2"),
+      collection(db, "entry-testv2"),
       where("highlight", "==", true)
     );
     const querySnapshot = await getDocs(q);
@@ -54,21 +54,11 @@ async function getHighlights() {
     console.error("Error reading highlights: ", e);
   }
 }
-
-try {
-  const q = query(
-    collection(db, "entry-test-v2"),
-    where("highlight", "==", true)
-  );
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    console.log(doc.id, " => ", doc.data());
-  });
-} catch (e) {
-  console.error("Error reading highlights: ", e);
-}
 getHighlights();
+// const querySnapshot = await getDocs(collection(db, "entry-testv2"));
+// querySnapshot.forEach((doc) => {
+//   console.log(`${doc.id} => ${doc.data()}`);
+// });
 // exports.sendNotification = functions.database
 //   .ref("/followers/{userUID}/{followerUID}")
 //   .onWrite((change, context) => {
