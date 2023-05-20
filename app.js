@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { getMessaging, getToken } from "firebase/messaging";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -23,6 +24,7 @@ const getTodayDate = () => new Date().toLocaleDateString("en-GB");
 const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
+const messaging = getMessaging(app);
 
 async function whriteNewEntry(title, content, signed, highlight) {
   try {
@@ -55,28 +57,59 @@ async function getHighlights() {
   }
 }
 getHighlights();
-// const querySnapshot = await getDocs(collection(db, "entry-testv2"));
-// querySnapshot.forEach((doc) => {
-//   console.log(`${doc.id} => ${doc.data()}`);
-// });
-// exports.sendNotification = functions.database
-//   .ref("/followers/{userUID}/{followerUID}")
-//   .onWrite((change, context) => {
-//     const userUID = context.params.userUID;
-//     const followerUID = context.params.followerUID;
 
-//     const tokens = getUserDeviceTokens(userUID);
-//     const name = getUserDisplayName(followerUID);
+function requestPermission() {
+  console.log("Requesting permission...");
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      console.log("Notification permission granted.");
+      getToken(messaging, {
+        vapidKey:
+          "BGo4_4bSV_kdlNn3JXvUuQ9RP_ig3G1WgTc9xf2xbWp568NNQ-u0lyZzyLxErahSVH7izynrZ86NA2eoubUgFaU",
+      }).then((currentToken) => {
+        if (currentToken) {
+          console.log("currentToken: ", currentToken);
+          messaging
+            .subscribeToTopic(currentToken, "/entries")
+            .then((response) => {
+              console.log("Successfully subscribed to topic:", response);
+            })
+            .catch((error) => {
+              console.log("Error subscribing to topic:", error);
+            });
+        } else {
+          console.log("Can not get token");
+        }
+      });
+    } else {
+      console.log("Do not have permission!");
+    }
+  });
+}
 
-//     // Notification details.
-//     const payload = {
-//       notification: {
-//         title: "You have a new entry!",
-//         body: `${name} is now following you.`,
-//       },
-//     };
-//     return admin.messaging().sendToDevice(tokens, payload);
-//   });
+exports.sendNotification = functions.firestore
+  .ref('"entry-testv2')
+  .onWrite((change, context) => {
+    const newDocument = change.after.data();
+
+    // Get the device token for the device that created the new document.
+    const deviceToken = newDocument.deviceToken;
+
+    // When there is multiple subscribers
+    // const tokens = admin.messaging().getTopicTokens('/entries');
+
+    // Create a notification payload.
+    const payload = {
+      notification: {
+        title: "New Post!",
+        body: `${newDocument.title}`,
+      },
+    };
+
+    // Send the notification to the device.
+    return admin.messaging().sendToDevice(deviceToken, payload);
+    // admin.messaging().sendToTopic('/entries', payload);
+  });
 
 // const form = document.querySelector('#add-cafe-form');
 // form.addEventListener("submit", (e) => {
