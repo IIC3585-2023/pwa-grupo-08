@@ -17,7 +17,13 @@
         <main class="main-content">
             <h1>Journalistic AppDCC</h1>
             <div class="note-editor" id="note-editor">
+                <div class="small-container">
+                    <input type="text" id="note-title" placeholder="Titulo"/>
+                    <div class="label"> Destacar </div>
+                    <input type="checkbox" id="highlight" />
+                </div>
                 <textarea id="note-input" placeholder="Escribe una nota"></textarea>
+                <input type="text" class="signature" placeholder="Firma (opcional)"/>
             </div>
 
             <div class="note-viewer" id="note-viewer">
