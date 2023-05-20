@@ -20,10 +20,13 @@
                 <div class="small-container">
                     <input type="text" id="note-title" placeholder="Titulo"/>
                     <div class="label"> Destacar </div>
-                    <input type="checkbox" id="highlight" />
+                    <input type="checkbox" id="note-highlight" />
                 </div>
                 <textarea id="note-input" placeholder="Escribe una nota"></textarea>
-                <input type="text" class="signature" placeholder="Firma (opcional)"/>
+                <div class="small-container">
+                    <input type="text" id="note-signature" class="signature" placeholder="Firma (opcional)"/>
+                    <input type="button" class="button" id="submit" onclick="onSubmit()" value="Enviar"/>
+                </div>
             </div>
 
             <div class="note-viewer" id="note-viewer">

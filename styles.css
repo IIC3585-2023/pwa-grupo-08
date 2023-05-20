@@ -62,6 +62,7 @@
 
 .note-editor {
     margin-bottom: 20px;
+    flex-direction: column;
 }
 
 .note-editor input {
@@ -78,8 +79,8 @@
 
 .note-editor textarea {
     width: 100%;
+    margin-right: 20px;
     height: 200px;
-    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -106,4 +107,9 @@
 .label {
     margin-top: 5px;
     font-family: 'Courier New', Courier, monospace;
+}
+
+.button {
+    font-family: 'Courier New', Courier, monospace;
+    margin-right: 20px;
 }
