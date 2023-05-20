@@ -74,6 +74,12 @@
     min-height: 200px;
 }
 
+.note-output {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 200px;
+}
+
 .note-viewer #note-output {
     white-space: pre-wrap;
 }

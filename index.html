@@ -8,24 +8,25 @@
     <div class="container">
         <aside class="sidebar">
             <ul>
-                <li><img src="imgs/quill-drawing-a-line.png" a href="#" onclick="toggleElement('element1')"></img></li>
-                <li><img src="imgs/travel-journal.png" href="#" onclick="toggleElement('element2')"></img></li>
+                <li><img src="imgs/quill-drawing-a-line.png" a href="#" onclick="toggleDivVisibility('note-editor')"></img></li>
+                <li><img src="imgs/travel-journal.png" href="#" onclick="toggleDivVisibility('note-viewer')"></img></li>
                 <li><img src="imgs/heart.png" href="#" onclick="toggleElement('element3')"></img></li>
             </ul>
         </aside>
 
         <main class="main-content">
             <h1>Journalistic AppDCC</h1>
-            <div class="note-editor">
+            <div class="note-editor" id="note-editor">
                 <textarea id="note-input" placeholder="Escribe una nota"></textarea>
             </div>
 
-            <div class="note-viewer">
-                <h2 id="element1" class="hidden">Elemento 1</h2>
+            <div class="note-viewer" id="note-viewer">
+                <!--<h2 id="element1" class="hidden">Elemento 1</h2>-->
                 <p id="element2" class="hidden">Elemento 2</p>
                 <img id="element3" class="hidden" src="imgs/Pangui.png" alt="Elemento 3">
-                <div id="note-output"></div>
+                <div class="note-output" id="note-output"></div>
             </div>
+            
         </main>
     </div>
 

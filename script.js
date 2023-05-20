@@ -32,3 +32,12 @@ function toggleElement(elementId) {
     const element = document.getElementById(elementId);
     element.classList.toggle('hidden');
 }
+
+function toggleDivVisibility(divId) {
+    var div = document.getElementById(divId);
+    if (div.style.display === 'none') {
+        div.style.display = 'block'; // Mostrar el div
+    } else {
+        div.style.display = 'none'; // Ocultar el div
+    }
+}
