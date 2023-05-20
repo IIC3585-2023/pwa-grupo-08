@@ -1,19 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Journalisitc APP</title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="manifest" href="/manifest.json">
+    <title>Aplicación de Notas</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-<header>
-    <h1 class="center">Journalisitc APP</h1>
-</header>
-<main>
-    <div class="container"></div>
-</main>
-<script src="app.js"></script> 
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+                <li><img src="imgs/Pangui.png" a href="#" onclick="toggleElement('element1')"></a></li>
+                <li><a href="#" onclick="toggleElement('element2')">Botón 2</a></li>
+                <li><a href="#" onclick="toggleElement('element3')">Botón 3</a></li>
+            </ul>
+        </aside>
 
+        <main class="main-content">
+            <div class="note-editor">
+                <textarea id="note-input" placeholder="Escribe una nota"></textarea>
+            </div>
+
+            <div class="note-viewer">
+                <h2 id="element1" class="hidden">Elemento 1</h2>
+                <p id="element2" class="hidden">Elemento 2</p>
+                <img id="element3" class="hidden" src="imgs/Pangui.png" alt="Elemento 3">
+                <div id="note-output"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
