@@ -1,0 +1,18 @@
+{
+  "name": "last-test",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Initial Setup based on:",
+  "dependencies": {
+    "firebase": "^9.22.0",
+    "firebase-cli": "^1.2.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
