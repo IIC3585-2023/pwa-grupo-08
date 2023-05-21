@@ -53,18 +53,17 @@ async function getEntries() {
       // doc.data() is never undefined for query doc snapshots
       console.log(doc.id, " => ", doc.data());
     });
+    return querySnapshot;
   } catch (e) {
     console.error("Error reading highlights: ", e);
   }
 }
 
-const entries = getEntries();
-
 async function getHighlights() {
   try {
     console.log("Highlights");
     const q = query(
-      collection(db, "entry-testv2"),
+      collection(db, "entry-test-v2"),
       where("highlight", "==", true)
     );
     const querySnapshot = await getDocs(q);
@@ -76,7 +75,7 @@ async function getHighlights() {
     console.error("Error reading highlights: ", e);
   }
 }
-getHighlights();
+//getHighlights();
 
 
 
@@ -148,19 +147,9 @@ getHighlights();
 //   });
 
 // Obtener elementos del DOM
-const noteInput = document.getElementById('note-input');
 const noteOutput = document.getElementById('note-output');
-const noteTitle = document.getElementById('note-title');
-const noteSignatute = document.getElementById('note-signature');
 let noteHighlight = false
 
-// Escuchar eventos de entrada en la nota
-noteInput.addEventListener('input', updateNote);
-
-function updateNote() {
-    const noteText = noteInput.value;
-    noteOutput.textContent = noteText;
-}
 
 export function toggleDivVisibility(divId) {
     var div = document.getElementById(divId);
@@ -212,3 +201,21 @@ document.getElementById("note-highlight").onchange = () => {
   noteHighlight = !noteHighlight;
   console.log(noteHighlight);
 }
+
+async function fill_viewer() {
+  noteOutput.textContent = '[' + getTodayDate() + ']\n';
+  const entries = await getEntries();
+  entries.forEach((entry) => {
+    let author = entry.data().signed;
+    if (author== '') {
+      author= 'Anon';
+    }
+    console.log('['+ entry.data().date + ']', entry.data().content, '~', author);
+    noteOutput.textContent += entry.data().title + ': '
+    noteOutput.textContent += entry.data().content;
+    noteOutput.textContent += ' ~ ';
+    noteOutput.textContent += author;
+    noteOutput.textContent += '\n';
+  })
+}
+fill_viewer();
