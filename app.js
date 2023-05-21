@@ -215,6 +215,9 @@ async function fill_viewer() {
       author= 'Anon';
     }
     console.log('['+ entry.data().date + ']', entry.data().content, '~', author);
+    if (entry.data().highlight) {
+      noteOutput.textContent += '★ '
+    }
     noteOutput.textContent += entry.data().title + ': '
     noteOutput.textContent += entry.data().content;
     noteOutput.textContent += ' ~ ';
