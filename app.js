@@ -189,8 +189,12 @@ document.getElementById("submit").onclick = ()=> {
     var input = document.getElementById("note-input").value;
     var title = document.getElementById("note-title").value;
     var firma = document.getElementById("note-signature").value;
-    writeNewEntry(title,input,firma,noteHighlight);
-    console.log("xd");
+    if (input == '' || title == '') {
+      alert('Debe incluir Titulo y contenido');
+    } else {
+      writeNewEntry(title,input,firma,noteHighlight);
+      console.log('enviado');
+    }
 }
 
 export function onHighlightChange(){
