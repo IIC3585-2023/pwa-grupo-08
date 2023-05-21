@@ -3,7 +3,7 @@ const noteInput = document.getElementById('note-input');
 const noteOutput = document.getElementById('note-output');
 const noteTitle = document.getElementById('note-title');
 const noteSignatute = document.getElementById('note-signature');
-const noteHighlight = document.getElementById('note-highlight');
+let noteHighlight = false
 
 // Escuchar eventos de entrada en la nota
 noteInput.addEventListener('input', updateNote);
@@ -46,4 +46,10 @@ function toggleDivVisibility(divId) {
 
 function onSubmit() {
     console.log("SUBMIT");
+    console.log(noteHighlight.value);
+}
+
+function onHighlightChange(){
+    noteHighlight = !noteHighlight;
+    console.log(noteHighlight);
 }

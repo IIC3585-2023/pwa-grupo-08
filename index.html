@@ -8,9 +8,9 @@
     <div class="container">
         <aside class="sidebar">
             <ul>
-                <li><img src="imgs/quill-drawing-a-line.png" a href="#" onclick="toggleDivVisibility('note-editor')"></img></li>
-                <li><img src="imgs/travel-journal.png" href="#" onclick="toggleDivVisibility('note-viewer')"></img></li>
-                <li><img src="imgs/heart.png" href="#" onclick="toggleElement('element3')"></img></li>
+                <li><img src="imgs/quill-drawing-a-line.png" onclick="toggleDivVisibility('note-editor')"></img></li>
+                <li><img src="imgs/travel-journal.png"  onclick="toggleDivVisibility('note-viewer')"></img></li>
+                <li><img src="imgs/heart.png"  onclick="toggleElement('element3')"></img></li>
             </ul>
         </aside>
 
@@ -20,7 +20,7 @@
                 <div class="small-container">
                     <input type="text" id="note-title" placeholder="Titulo"/>
                     <div class="label"> Destacar </div>
-                    <input type="checkbox" id="note-highlight" />
+                    <input type="checkbox" id="note-highlight" onchange="onHighlightChange()"/>
                 </div>
                 <textarea id="note-input" placeholder="Escribe una nota"></textarea>
                 <div class="small-container">
@@ -39,6 +39,6 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.mjs" type="module"></script>
 </body>
 </html>
