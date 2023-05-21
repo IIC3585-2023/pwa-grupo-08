@@ -43,8 +43,9 @@ async function writeNewEntry(title, content, signed, highlight) {
 
 async function getEntries() {
   try {
+    console.log("Today's Entries");
     const q = query(
-      collection(db, "entry-testv2"),
+      collection(db, "entry-test-v2"),
       where("date", "==", getTodayDate())
     );
     const querySnapshot = await getDocs(q);
@@ -61,6 +62,7 @@ const entries = getEntries();
 
 async function getHighlights() {
   try {
+    console.log("Highlights");
     const q = query(
       collection(db, "entry-testv2"),
       where("highlight", "==", true)
@@ -160,21 +162,7 @@ function updateNote() {
     noteOutput.textContent = noteText;
 }
 
-// Función para alternar la visibilidad del título en la nota
-function toggleTitle(buttonNumber) {
-    const button = document.querySelector(`.sidebar ul li:nth-child(${buttonNumber})`);
-    const title = button.querySelector('.title');
-    button.classList.toggle('active');
-    title.style.display = (button.classList.contains('active')) ? 'block' : 'none';
-}
-
-// Función para alternar la visibilidad de los elementos
-function toggleElement(elementId) {
-    const element = document.getElementById(elementId);
-    element.classList.toggle('hidden');
-}
-
-function toggleDivVisibility(divId) {
+export function toggleDivVisibility(divId) {
     var div = document.getElementById(divId);
     if (div.style.display === 'none') {
         div.style.display = 'block'; // Mostrar el div
@@ -182,13 +170,45 @@ function toggleDivVisibility(divId) {
         div.style.display = 'none'; // Ocultar el div
     }
 }
-
-function onSubmit() {
-    console.log("SUBMIT");
-    console.log(noteHighlight.value);
+document.getElementById("boton1").onclick = ()=> {
+  var div = document.getElementById("note-viewer");
+    if (div.style.display === 'none') {
+        div.style.display = 'block'; // Mostrar el div
+    } else {
+        div.style.display = 'none'; // Ocultar el div
+    }
+}
+document.getElementById("boton2").onclick = ()=> {
+  var div = document.getElementById('note-editor');
+    if (div.style.display === 'none') {
+        div.style.display = 'block'; // Mostrar el div
+    } else {
+        div.style.display = 'none'; // Ocultar el div
+    }
+}
+document.getElementById("boton3").onclick = ()=> {
+  var div = document.getElementById('element3');
+    if (div.style.display === 'none') {
+        div.style.display = 'block'; // Mostrar el div
+    } else {
+        div.style.display = 'none'; // Ocultar el div
+    }
 }
 
-function onHighlightChange(){
+document.getElementById("submit").onclick = ()=> {
+    console.log("SUBMIT");
+    var input = document.getElementById("note-input").value;
+    var title = document.getElementById("note-title").value;
+    var firma = document.getElementById("note-signature").value;
+    writeNewEntry(title,input,firma,noteHighlight);
+    console.log("xd");
+}
+
+export function onHighlightChange(){
     noteHighlight = !noteHighlight;
     console.log(noteHighlight);
+}
+document.getElementById("note-highlight").onchange = () => {
+  noteHighlight = !noteHighlight;
+  console.log(noteHighlight);
 }

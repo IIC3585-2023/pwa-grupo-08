@@ -4,13 +4,14 @@
     <title>Aplicación de Notas</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
+<script type="module" src="app.js" ></script>
 <body>
     <div class="container">
         <aside class="sidebar">
             <ul>
-                <li><img src="imgs/quill-drawing-a-line.png" onclick="toggleDivVisibility('note-editor')"></img></li>
-                <li><img src="imgs/travel-journal.png"  onclick="toggleDivVisibility('note-viewer')"></img></li>
-                <li><img src="imgs/heart.png"  onclick="toggleElement('element3')"></img></li>
+                <li><img src="imgs/quill-drawing-a-line.png" id="boton2"></img></li>
+                <li><img src="imgs/travel-journal.png"  id="boton1" ></img></li>
+                <li><img src="imgs/heart.png"  id="boton3"></img></li>
             </ul>
         </aside>
 
@@ -20,7 +21,7 @@
                 <div class="small-container">
                     <input type="text" id="note-title" placeholder="Titulo"/>
                     <div class="label"> Destacar </div>
-                    <input type="checkbox" id="note-highlight" onchange="onHighlightChange()"/>
+                    <input type="checkbox" id="note-highlight"/>
                 </div>
                 <textarea id="note-input" placeholder="Escribe una nota"></textarea>
                 <div class="small-container">
@@ -39,6 +40,6 @@
         </main>
     </div>
 
-    <script src="app.mjs" type="module"></script>
+
 </body>
 </html>
