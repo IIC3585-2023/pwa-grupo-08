@@ -1,3 +1,4 @@
+
 // Obtener elementos del DOM
 const noteInput = document.getElementById('note-input');
 const noteOutput = document.getElementById('note-output');
