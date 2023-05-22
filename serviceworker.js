@@ -14,7 +14,7 @@ const staticAssets = [
                         '/app.js', // Rutas de los archivos JavaScript
                         // Agrega aquí otras rutas de los archivos necesarios para tu aplicación
                     ]);
-                })
+                }).catch(e=>console.log(e.message))
         );
     });
     
@@ -26,20 +26,20 @@ const staticAssets = [
     //              })
     //      );
     //  });
-     self.addEventListener('fetch', function(event) {
-        if (event.request.method === 'GET') {
-            event.respondWith(
-                caches.match(event.request)
-                    .then(function(response) {
-                        return response || fetch(event.request);
-                    })
-            );
-        } else {
-            // Realizar acciones específicas para las solicitudes POST
-            // como enviar la solicitud al servidor en línea sin almacenarla en caché
-            // o guardar los datos en IndexedDB en lugar de la caché.
-        }
-    });
+    //  self.addEventListener('fetch', function(event) {
+    //     if (event.request.method === 'GET') {
+    //         event.respondWith(
+    //             caches.match(event.request)
+    //                 .then(function(response) {
+    //                     return response || fetch(event.request);
+    //                 })
+    //         );
+    //     } else {
+    //         // Realizar acciones específicas para las solicitudes POST
+    //         // como enviar la solicitud al servidor en línea sin almacenarla en caché
+    //         // o guardar los datos en IndexedDB en lugar de la caché.
+    //     }
+    // });
 
 
 // // if (navigator.serviceWorker.controller) {
@@ -60,16 +60,36 @@ const staticAssets = [
 //     cache.addAll(staticAssets);
 // });
 
-//  self.addEventListener('fetch', event => {
-//      const {request} = event;
-//      const url = new URL(request.url);
-//      if(url.origin === location.origin) {
-//          event.respondWith(cacheData(request));
-//      } 
-//     //  else {
-//     //      event.respondWith(networkFirst(request));
-//     //  }
-//  });
+self.addEventListener('fetch', event => {
+    const {request} = event;
+    const url = new URL(request.url);
+    if(url.origin === location.origin) {
+        event.respondWith(cacheData(request));
+    } 
+   //  else {
+   //      event.respondWith(networkFirst(request));
+   //  }
+});
+
+
+//Chat GPT 
+// self.addEventListener('fetch', function(event) {
+//     event.respondWith(
+//         fetch(event.request)
+//             .catch(function(error) {
+//                 console.log(error);
+//                 // Se produjo un error al recuperar el recurso
+//                 // Puedes crear un objeto de respuesta personalizado para enviar el mensaje de error
+//                 return new Response('Error al recuperar el recurso: ' + error, {
+//                     status: 500, // Código de estado HTTP para indicar un error
+//                     statusText: 'Failed to fetch', // Texto descriptivo del error
+//                     headers: {
+//                         'Content-Type': 'text/plain'
+//                     }
+//                 });
+//             })
+//     );
+// });
 
  async function cacheData(request) {
      const cachedResponse = await caches.match(request);
