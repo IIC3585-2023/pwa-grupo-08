@@ -148,6 +148,7 @@ async function getHighlights() {
 
 // Obtener elementos del DOM
 const noteOutput = document.getElementById('note-output');
+const highlightsOutput = document.getElementById('highlightsBox');
 let noteHighlight = false
 
 
@@ -160,28 +161,22 @@ export function toggleDivVisibility(divId) {
     }
 }
 document.getElementById("boton1").onclick = ()=> {
-  var div = document.getElementById("note-viewer");
-    if (div.style.display === 'none') {
-        div.style.display = 'block'; // Mostrar el div
-    } else {
-        div.style.display = 'none'; // Ocultar el div
-    }
+  JustShowThis("note-viewer")
 }
 document.getElementById("boton2").onclick = ()=> {
-  var div = document.getElementById('note-editor');
-    if (div.style.display === 'none') {
-        div.style.display = 'block'; // Mostrar el div
-    } else {
-        div.style.display = 'none'; // Ocultar el div
-    }
+  JustShowThis("note-editor")
 }
 document.getElementById("boton3").onclick = ()=> {
-  var div = document.getElementById('element3');
-    if (div.style.display === 'none') {
-        div.style.display = 'block'; // Mostrar el div
-    } else {
-        div.style.display = 'none'; // Ocultar el div
+  JustShowThis("highlights")
+}
+function JustShowThis(name){
+  document.getElementById(name).style.display = 'block';
+  var lista = ["highlights",'note-editor',"note-viewer"]
+  lista.forEach(element => {
+    if(element!=name){
+      document.getElementById(element).style.display = 'none'
     }
+  });
 }
 
 document.getElementById("submit").onclick = ()=> {
@@ -207,7 +202,7 @@ document.getElementById("note-highlight").onchange = () => {
 }
 
 async function fill_viewer() {
-  noteOutput.textContent = '[' + getTodayDate() + ']\n';
+  noteOutput.innerHTML = '[' + getTodayDate() + ']\n';
   const entries = await getEntries();
   entries.forEach((entry) => {
     let author = entry.data().signed;
@@ -216,13 +211,33 @@ async function fill_viewer() {
     }
     console.log('['+ entry.data().date + ']', entry.data().content, '~', author);
     if (entry.data().highlight) {
-      noteOutput.textContent += '★ '
+      noteOutput.innerHTML += '★ '
     }
-    noteOutput.textContent += entry.data().title + ': '
-    noteOutput.textContent += entry.data().content;
-    noteOutput.textContent += ' ~ ';
-    noteOutput.textContent += author;
-    noteOutput.textContent += '\n';
+    noteOutput.innerHTML += entry.data().title + ': '
+    noteOutput.innerHTML += entry.data().content;
+    noteOutput.innerHTML += ' ~ ';
+    noteOutput.innerHTML += author;
+    noteOutput.innerHTML += " <br />";
+  })
+}
+async function fill_highlights() {
+  highlightsOutput.innerHTML = '[' + getTodayDate() + ']\n';
+  const entries = await getEntries();
+  entries.forEach((entry) => {
+    if (entry.data().highlight) {
+    let author = entry.data().signed;
+    if (author== '') {
+      author= 'Anon';
+    }
+    console.log('['+ entry.data().date + ']', entry.data().content, '~', author);
+    highlightsOutput.innerHTML += '★ '
+    highlightsOutput.innerHTML += entry.data().title + ': '
+    highlightsOutput.innerHTML += entry.data().content;
+    highlightsOutput.innerHTML += ' ~ ';
+    highlightsOutput.innerHTML += author;
+    highlightsOutput.innerHTML += " <br />";
+  }
   })
 }
 fill_viewer();
+fill_highlights();

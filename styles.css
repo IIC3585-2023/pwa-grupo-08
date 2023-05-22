@@ -91,10 +91,21 @@
     min-height: 200px;
 }
 
+.highlights {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 200px;
+}
+
 .note-output {
     border: 1px solid #ccc;
     padding: 10px;
     min-height: 200px;
+    white-space: pre;
+}
+
+.textBox {
+    white-space: pre-line;
 }
 
 .note-viewer #note-output {
