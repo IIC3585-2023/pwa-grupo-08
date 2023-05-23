@@ -1,14 +1,22 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js"
-import { collection, getDocs, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js"
-import { query, orderBy, limit, where, onSnapshot } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js"
-// import { getMessaging, getToken } from "firebase/messaging";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js
+// https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js
+// "https://www.gstatic.com/firebasejs/9.1.1/firebase-messaging.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  query,
+  where,
+  enableIndexedDbPersistence,
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import {
+  getMessaging,
+  getToken,
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDm75biz5grREeEcu753VD-ror0QmRPJ5g",
   authDomain: "journal-98479.firebaseapp.com",
@@ -24,7 +32,32 @@ const getTodayDate = () => new Date().toLocaleDateString("en-GB");
 const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
-// const messaging = getMessaging(app);
+const messaging = getMessaging(app); //
+
+function subscribeToTopic(clientToken, topicName) {
+  const payload = {
+    token: clientToken,
+    topic: topicName,
+  };
+
+  fetch("/subscribe-to-topic", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log("Successfully subscribed to the topic.");
+      } else {
+        throw new Error("Failed to subscribe to the topic.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
 
 async function writeNewEntry(title, content, signed, highlight) {
   try {
@@ -75,52 +108,55 @@ async function getHighlights() {
     console.error("Error reading highlights: ", e);
   }
 }
-//getHighlights();
 
+function writeToken(token) {
+  const tokensCollection = collection(db, "tokens-vowo");
+  const tokenQuery = query(tokensCollection, where("token", "==", token));
+  const topic = "test";
 
+  getDocs(tokenQuery)
+    .then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        // Token does not exist, register it as a new document
+        addDoc(tokensCollection, { token: token })
+          .then((docRef) => {
+            console.log("Token registered successfully with ID:", docRef.id);
+          })
+          .catch((error) => {
+            console.error("Error registering token:", error);
+          });
+      } else {
+        console.log("Token already exists:", token);
+        // Handle the case when the token already exists
+      }
+    })
+    .catch((error) => {
+      console.error("Error checking token existence:", error);
+    });
+}
 
-// const form = document.querySelector('#add-cafe-form');
-// form.addEventListener("submit", (e) => {
-//   e.preventDefault();
-//   whriteNewEntry(
-//     form.title.value,
-//     form.content.value,
-//     form.signed.value,
-//     form.highlight.value
-//   );
-//   form.title.value = "";
-//   form.content.value = "";
-//   form.signed.value = "";
-// });
-
-// function requestPermission() {
-//   console.log("Requesting permission...");
-//   Notification.requestPermission().then((permission) => {
-//     if (permission === "granted") {
-//       console.log("Notification permission granted.");
-//       getToken(messaging, {
-//         vapidKey:
-//           "BGo4_4bSV_kdlNn3JXvUuQ9RP_ig3G1WgTc9xf2xbWp568NNQ-u0lyZzyLxErahSVH7izynrZ86NA2eoubUgFaU",
-//       }).then((currentToken) => {
-//         if (currentToken) {
-//           console.log("currentToken: ", currentToken);
-//           messaging
-//             .subscribeToTopic(currentToken, "/entries")
-//             .then((response) => {
-//               console.log("Successfully subscribed to topic:", response);
-//             })
-//             .catch((error) => {
-//               console.log("Error subscribing to topic:", error);
-//             });
-//         } else {
-//           console.log("Can not get token");
-//         }
-//       });
-//     } else {
-//       console.log("Do not have permission!");
-//     }
-//   });
-// }
+function requestPermission() {
+  console.log("Requesting permission...");
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      console.log("Notification permission granted.");
+      getToken(messaging, {
+        vapidKey:
+          "BGo4_4bSV_kdlNn3JXvUuQ9RP_ig3G1WgTc9xf2xbWp568NNQ-u0lyZzyLxErahSVH7izynrZ86NA2eoubUgFaU",
+      }).then((currentToken) => {
+        if (currentToken) {
+          console.log("currentToken: ", currentToken);
+          writeToken(currentToken);
+        } else {
+          console.log("Can not get token");
+        }
+      });
+    } else {
+      console.log("Do not have permission!");
+    }
+  });
+}
+requestPermission();
 
 // export const sendNotification = functions.firestore
 //   .ref('"entry-testv2')
@@ -147,101 +183,110 @@ async function getHighlights() {
 //   });
 
 // Obtener elementos del DOM
-const noteOutput = document.getElementById('note-output');
-const highlightsOutput = document.getElementById('highlightsBox');
-let noteHighlight = false
-
+const noteOutput = document.getElementById("note-output");
+const highlightsOutput = document.getElementById("highlightsBox");
+let noteHighlight = false;
 
 export function toggleDivVisibility(divId) {
-    var div = document.getElementById(divId);
-    if (div.style.display === 'none') {
-        div.style.display = 'block'; // Mostrar el div
-    } else {
-        div.style.display = 'none'; // Ocultar el div
-    }
+  var div = document.getElementById(divId);
+  if (div.style.display === "none") {
+    div.style.display = "block"; // Mostrar el div
+  } else {
+    div.style.display = "none"; // Ocultar el div
+  }
 }
-document.getElementById("boton1").onclick = ()=> {
-  JustShowThis("note-viewer")
-}
-document.getElementById("boton2").onclick = ()=> {
-  JustShowThis("note-editor")
-}
-document.getElementById("boton3").onclick = ()=> {
-  JustShowThis("highlights")
-}
-function JustShowThis(name){
-  document.getElementById(name).style.display = 'block';
-  var lista = ["highlights",'note-editor',"note-viewer"]
-  lista.forEach(element => {
-    if(element!=name){
-      document.getElementById(element).style.display = 'none'
+document.getElementById("boton1").onclick = () => {
+  JustShowThis("note-viewer");
+};
+document.getElementById("boton2").onclick = () => {
+  JustShowThis("note-editor");
+};
+document.getElementById("boton3").onclick = () => {
+  JustShowThis("highlights");
+};
+function JustShowThis(name) {
+  document.getElementById(name).style.display = "block";
+  var lista = ["highlights", "note-editor", "note-viewer"];
+  lista.forEach((element) => {
+    if (element != name) {
+      document.getElementById(element).style.display = "none";
     }
   });
 }
 
-document.getElementById("submit").onclick = ()=> {
+document.getElementById("submit").onclick = () => {
   console.log("SUBMIT");
   var input = document.getElementById("note-input").value;
   var title = document.getElementById("note-title").value;
   var firma = document.getElementById("note-signature").value;
-  if (input == '' || title == '') {
-    alert('Debe incluir Titulo y contenido');
+  if (input == "" || title == "") {
+    alert("Debe incluir Titulo y contenido");
   } else {
-    writeNewEntry(title,input,firma,noteHighlight);
-    document.getElementById("note-input").value = ''
-    document.getElementById("note-title").value = ''
-    document.getElementById("note-signature").value = ''
+    writeNewEntry(title, input, firma, noteHighlight);
+    document.getElementById("note-input").value = "";
+    document.getElementById("note-title").value = "";
+    document.getElementById("note-signature").value = "";
     fill_viewer();
-    console.log('enviado');
+    console.log("enviado");
   }
-}
+};
 
-export function onHighlightChange(){
-    noteHighlight = !noteHighlight;
-    console.log(noteHighlight);
+export function onHighlightChange() {
+  noteHighlight = !noteHighlight;
+  console.log(noteHighlight);
 }
 document.getElementById("note-highlight").onchange = () => {
   noteHighlight = !noteHighlight;
   console.log(noteHighlight);
-}
+};
 
 async function fill_viewer() {
-  noteOutput.innerHTML = '[' + getTodayDate() + ']\n';
+  noteOutput.innerHTML = "[" + getTodayDate() + "]\n";
   const entries = await getEntries();
   entries.forEach((entry) => {
     let author = entry.data().signed;
-    if (author== '') {
-      author= 'Anon';
+    if (author == "") {
+      author = "Anon";
     }
-    console.log('['+ entry.data().date + ']', entry.data().content, '~', author);
+    console.log(
+      "[" + entry.data().date + "]",
+      entry.data().content,
+      "~",
+      author
+    );
     if (entry.data().highlight) {
-      noteOutput.innerHTML += '★ '
+      noteOutput.innerHTML += "★ ";
     }
-    noteOutput.innerHTML += entry.data().title + ': '
+    noteOutput.innerHTML += entry.data().title + ": ";
     noteOutput.innerHTML += entry.data().content;
-    noteOutput.innerHTML += ' ~ ';
+    noteOutput.innerHTML += " ~ ";
     noteOutput.innerHTML += author;
     noteOutput.innerHTML += " <br />";
-  })
+  });
 }
 async function fill_highlights() {
-  highlightsOutput.innerHTML = '[' + getTodayDate() + ']\n';
+  highlightsOutput.innerHTML = "[" + getTodayDate() + "]\n";
   const entries = await getEntries();
   entries.forEach((entry) => {
     if (entry.data().highlight) {
-    let author = entry.data().signed;
-    if (author== '') {
-      author= 'Anon';
+      let author = entry.data().signed;
+      if (author == "") {
+        author = "Anon";
+      }
+      console.log(
+        "[" + entry.data().date + "]",
+        entry.data().content,
+        "~",
+        author
+      );
+      highlightsOutput.innerHTML += "★ ";
+      highlightsOutput.innerHTML += entry.data().title + ": ";
+      highlightsOutput.innerHTML += entry.data().content;
+      highlightsOutput.innerHTML += " ~ ";
+      highlightsOutput.innerHTML += author;
+      highlightsOutput.innerHTML += " <br />";
     }
-    console.log('['+ entry.data().date + ']', entry.data().content, '~', author);
-    highlightsOutput.innerHTML += '★ '
-    highlightsOutput.innerHTML += entry.data().title + ': '
-    highlightsOutput.innerHTML += entry.data().content;
-    highlightsOutput.innerHTML += ' ~ ';
-    highlightsOutput.innerHTML += author;
-    highlightsOutput.innerHTML += " <br />";
-  }
-  })
+  });
 }
 fill_viewer();
 fill_highlights();

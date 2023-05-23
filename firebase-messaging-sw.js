@@ -1,5 +1,10 @@
-import { getMessaging, getToken } from "firebase/messaging/sw";
-import { initializeApp } from "firebase/app";
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"
+);
+
 const firebaseConfig = {
   apiKey: "AIzaSyDm75biz5grREeEcu753VD-ror0QmRPJ5g",
   authDomain: "journal-98479.firebaseapp.com",
@@ -9,9 +14,48 @@ const firebaseConfig = {
   appId: "1:267326710923:web:d798a11c7fd56188d9208e",
   measurementId: "G-DD0ZCQTVJK",
 };
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-onMessage(messaging, (payload) => {
-  console.log("Message received. ", payload);
-  // ...
+const app = firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log(
+    "[firebase-messaging-sw.js] Received background message ",
+    payload
+  );
+  // Customize notification here
+  const notificationTitle = "New entry just dropped!";
+  const notificationOptions = {
+    body: "Read it on the app ;)",
+    icon: "/icons/icon-128.png",
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+
+  //   const notification = JSON.parse(payload.data.notification);
+  //   const notificationTitle = notification.title;
+  //   const notificationOptions = {
+  //     body: notification.body,
+  //   };
+  //   return self.registration.showNotification(
+  //     notificationTitle,
+  //     notificationOptions
+  //   );
+  // });
+  // messaging.onMessage(messaging, (payload) => {
+  //   console.log("Message received. ", payload);
+  //   // ...
 });
+// onBackgroundMessage(messaging, (payload) => {
+//   console.log(
+//     "[firebase-messaging-sw.js] Received background message ",
+//     payload
+//   );
+//   // Customize notification here
+//   const notificationTitle = "Background Message Title";
+//   const notificationOptions = {
+//     body: "Background Message body.",
+//     icon: "/icons/icon-144.png",
+//   };
+
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });
