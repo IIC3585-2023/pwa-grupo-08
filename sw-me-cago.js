@@ -52,7 +52,7 @@ self.addEventListener("install", function (event) {
       return cache.addAll([
         "/",
         "/styles.css",
-        "/script.js",
+        "/app.js",
         "/imgs/heart.png",
         // "/imgs/journal.png",
         // "/imgs/travel-journal.png",
@@ -61,6 +61,14 @@ self.addEventListener("install", function (event) {
         // "icons/icon-128.png",
         // Add more resources to cache here
       ]);
+    })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request);
     })
   );
 });
