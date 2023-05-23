@@ -299,3 +299,8 @@ if ('Notification' in window && 'serviceWorker' in navigator) {
     }
   });
 }
+const date = document.getElementById("date");
+date.innerHTML=getTodayDate();
+const weekday = document.getElementById("weekday");
+var name = new Date().toLocaleDateString("es-ES",{weekday:'long'})
+weekday.innerHTML=name
