@@ -85,3 +85,79 @@ self.addEventListener("install", function (event) {
 //     })
 //   );
 // });
+// Función para guardar los datos en IndexedDB
+async function saveDataToIndexedDB(data) {
+  try {
+    const db = await idb.openDB("app-db", 1, {
+      upgrade(db) {
+        db.createObjectStore("data-store");
+      },
+    });
+
+    const tx = db.transaction("data-store", "readwrite");
+    const store = tx.objectStore("data-store");
+    await store.put(data, "data");
+
+    await tx.complete;
+    db.close();
+  } catch (error) {
+    console.error("Error saving data to IndexedDB:", error);
+  }
+}
+
+// Función para obtener los datos de IndexedDB
+async function getDataFromIndexedDB() {
+  try {
+    const db = await idb.openDB("app-db", 1);
+    const tx = db.transaction("data-store", "readonly");
+    const store = tx.objectStore("data-store");
+    const data = await store.get("data");
+
+    db.close();
+    return data;
+  } catch (error) {
+    console.error("Error retrieving data from IndexedDB:", error);
+    return null;
+  }
+}
+
+// ...
+
+self.addEventListener("fetch", function (event) {
+  if (event.request.method === "GET") {
+{
+      // Para otras solicitudes GET, busca en la caché o realiza la solicitud a la red
+      event.respondWith(
+        caches.match(event.request).then(async function (response) {
+          if (response) {
+            // Si se encuentra una respuesta en la caché, se devuelve
+            return response;
+          } else {
+            // Si no se encuentra en la caché, se intenta obtener los datos de IndexedDB
+            const data = await getDataFromIndexedDB();
+            if (data) {
+              // Si se encuentran datos en IndexedDB, se crea una nueva respuesta con los datos
+              return new Response(JSON.stringify(data));
+            } else {
+              // Si no se encuentran datos en IndexedDB, se realiza la solicitud a la red
+              try {
+                const response = await fetch(event.request);
+                const responseData = await response.json();
+                // Guardar los datos en IndexedDB para futuras referencias
+                saveDataToIndexedDB(responseData);
+                return response;
+              } catch (error) {
+                // Si la solicitud a la red falla, se muestra un mensaje de error o se realiza otra acción adecuada
+                return new Response("Error: Failed to fetch", { status: 500 });
+              }
+            }
+          }
+        })
+      );
+    }
+  } else {
+    // Realizar acciones específicas para las solicitudes POST
+    // como enviar la solicitud al servidor en línea sin almacenarla en caché
+    // o guardar los datos en IndexedDB en lugar de la caché.
+  }
+});

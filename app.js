@@ -241,6 +241,7 @@ document.getElementById("note-highlight").onchange = () => {
 };
 
 async function fill_viewer() {
+  console.log("Filling Viewer");
   noteOutput.innerHTML = "[" + getTodayDate() + "]\n";
   const entries = await getEntries();
   entries.forEach((entry) => {
@@ -265,6 +266,7 @@ async function fill_viewer() {
   });
 }
 async function fill_highlights() {
+  console.log("Filling Highlights");
   highlightsOutput.innerHTML = "[" + getTodayDate() + "]\n";
   const entries = await getEntries();
   entries.forEach((entry) => {
