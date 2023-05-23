@@ -4,19 +4,23 @@ const staticAssets = [
     './app.js'
 ];
 
-    self.addEventListener('install', function(event) {
-        event.waitUntil(
-            caches.open('app-cache')
-                .then(function(cache) {
-                    return cache.addAll([
-                        '/index.html', // Ruta principal del archivo HTML
-                        '/styles.css', // Rutas de los archivos CSS
-                        '/app.js', // Rutas de los archivos JavaScript
-                        // Agrega aquí otras rutas de los archivos necesarios para tu aplicación
-                    ]);
-                })
-        );
-    });
+    // self.addEventListener('install', function(event) {
+    //     event.waitUntil(
+    //         caches.open('app-cache')
+    //             .then(function(cache) {
+    //                 return cache.addAll([
+    //                     '/index.html', // Ruta principal del archivo HTML
+    //                     '/styles.css', // Rutas de los archivos CSS
+    //                     '/app.js', // Rutas de los archivos JavaScript
+    //                     // Agrega aquí otras rutas de los archivos necesarios para tu aplicación
+    //                 ]);
+    //             })
+    //     );
+    // });
+    self.addEventListener('install', async () => {
+        const cache = await caches.open('twitter-cache');
+        cache.addAll(staticAssets);
+      });
     
     //  self.addEventListener('fetch', function(event) {
     //      event.respondWith(
@@ -88,17 +92,17 @@ const staticAssets = [
      }
 
  }
-  self.addEventListener('activate', function(event) {
-      var cacheWhitelist = ['pigment'];
-      event.waitUntil(
+self.addEventListener('activate', function(event) {
+    var cacheWhitelist = ['pigment'];
+    event.waitUntil(
         caches.keys().then(function(cacheNames) {
-          return Promise.all(
+        return Promise.all(
             cacheNames.map(function(cacheName) {
-              if (cacheWhitelist.indexOf(cacheName) === -1) {
+            if (cacheWhitelist.indexOf(cacheName) === -1) {
                 return caches.delete(cacheName);
-              }
+            }
             })
-          );
+        );
         })
-      );
+    );
     })
