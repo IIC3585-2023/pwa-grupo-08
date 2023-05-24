@@ -53,7 +53,7 @@ self.addEventListener('push', function(event) {
   
           // Almacena la respuesta en la caché para futuros usos
           caches.open('my-app-cache').then((cache) => {
-            cache.put(event.request, clonedResponse);
+            cache.add(event.request);
           });
   
           return networkResponse; // Retorna la respuesta recibida desde Firebase

@@ -47,27 +47,39 @@ onMessage(messaging, (payload) => {
 });
 async function writeNewEntry(title, content, signed, highlight) {
   try {
+    let entry;
+    let id;
+    if (navigator.onLine){
+
+    
     const docRef = await addDoc(collection(db, "entry-test-v2"), {
       title: title,
       date: getTodayDate(),
       content: content,
       signed: signed,
       highlight: highlight,
+      
     });
-
+    id=docRef.id;
+    }
+    if(typeof docRef==="undefined"){
+      id="offline";
+    }
     // Guardar los datos en IndexedDB
-    const entry = {
-      id: docRef.id,
+    console.log("id es" + id)
+    entry = {
+      id: id,
       title: title,
       date: getTodayDate(),
       content: content,
       signed: signed,
       highlight: highlight,
     };
+    console.log(entry);
 
     await saveEntryToIndexedDB(entry);
 
-    console.log("Document written with ID: ", docRef.id);
+    console.log("Document written with ID: ", id);
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -84,13 +96,17 @@ async function saveEntryToIndexedDB(entry) {
     const db = await dbPromise;
     const tx = db.transaction("entries", "readwrite");
     const store = tx.objectStore("entries");
+
+    // Proporciona un valor para la clave 'id'
     await store.put(entry);
+
     await tx.complete;
     db.close();
   } catch (e) {
     console.error("Error saving entry to IndexedDB: ", e);
   }
 }
+
 
 async function getEntries() {
   try {
