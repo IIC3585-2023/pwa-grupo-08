@@ -1,5 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import {
+  getMessaging,
+  getToken,
+  onMessage,
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
+import {
   getFirestore,
   collection,
   getDocs,
@@ -8,13 +13,12 @@ import {
   where,
   enableIndexedDbPersistence,
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { openDB } from 'https://unpkg.com/idb?module';
-
+import { openDB } from "https://unpkg.com/idb?module";
 
 async function openIndexedDB() {
-  const db = await openDB('my-database', 1, {
+  const db = await openDB("my-database", 1, {
     upgrade(db) {
-      db.createObjectStore('my-data');
+      db.createObjectStore("my-data");
     },
   });
   return db;
@@ -35,9 +39,12 @@ const getTodayDate = () => new Date().toLocaleDateString("en-GB");
 const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
+const messaging = getMessaging(app);
 
-
-
+onMessage(messaging, (payload) => {
+  console.log("Message received. ", payload);
+  // ...
+});
 async function writeNewEntry(title, content, signed, highlight) {
   try {
     const docRef = await addDoc(collection(db, "entry-test-v2"), {
@@ -84,8 +91,6 @@ async function saveEntryToIndexedDB(entry) {
     console.error("Error saving entry to IndexedDB: ", e);
   }
 }
-
-
 
 async function getEntries() {
   try {
@@ -158,7 +163,6 @@ async function getEntriesFromIndexedDB() {
   }
 }
 
-
 // Obtener elementos del DOM
 const noteOutput = document.getElementById("note-output");
 const highlightsOutput = document.getElementById("highlightsBox");
@@ -227,12 +231,7 @@ async function fill_viewer() {
       if (author == "") {
         author = "Anon";
       }
-      console.log(
-        "[" + entry.date + "]",
-        entry.content,
-        "~",
-        author
-      );
+      console.log("[" + entry.date + "]", entry.content, "~", author);
       if (entry.highlight) {
         noteOutput.innerHTML += "★ ";
       }
@@ -243,7 +242,7 @@ async function fill_viewer() {
       noteOutput.innerHTML += " <br />";
     });
   } catch (e) {
-    console.error('Error filling viewer: ', e);
+    console.error("Error filling viewer: ", e);
   }
 }
 
@@ -259,12 +258,7 @@ async function fill_highlights() {
         if (author == "") {
           author = "Anon";
         }
-        console.log(
-          "[" + entry.date + "]",
-          entry.content,
-          "~",
-          author
-        );
+        console.log("[" + entry.date + "]", entry.content, "~", author);
         highlightsOutput.innerHTML += "★ ";
         highlightsOutput.innerHTML += entry.title + ": ";
         highlightsOutput.innerHTML += entry.content;
@@ -274,33 +268,33 @@ async function fill_highlights() {
       }
     });
   } catch (e) {
-    console.error('Error filling highlights: ', e);
+    console.error("Error filling highlights: ", e);
   }
 }
 
 fill_viewer();
 fill_highlights();
 
-if ('Notification' in window && 'serviceWorker' in navigator) {
-  Notification.requestPermission().then(function(permission) {
-    if (permission === 'granted') {
+if ("Notification" in window && "serviceWorker" in navigator) {
+  Notification.requestPermission().then(function (permission) {
+    if (permission === "granted") {
       // Permiso concedido, obtén la token de registro
-      navigator.serviceWorker.ready.then(function(registration) {
-        registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: 'tu_clave_publica_vapid',
-        }).then(function(subscription) {
-          // Envía la suscripción al servidor para almacenarla y enviar notificaciones
-          console.log('Suscripción:', subscription);
-        }).catch(function(error) {
-          console.log('Error al suscribirse a las notificaciones push:', error);
-        });
+
+      getToken(messaging, {
+        vapidKey:
+          "BGo4_4bSV_kdlNn3JXvUuQ9RP_ig3G1WgTc9xf2xbWp568NNQ-u0lyZzyLxErahSVH7izynrZ86NA2eoubUgFaU",
+      }).then((currentToken) => {
+        if (currentToken) {
+          console.log("currentToken: ", currentToken);
+        } else {
+          console.log("Can not get token");
+        }
       });
     }
   });
 }
 const date = document.getElementById("date");
-date.innerHTML=getTodayDate();
+date.innerHTML = getTodayDate();
 const weekday = document.getElementById("weekday");
-var name = new Date().toLocaleDateString("es-ES",{weekday:'long'})
-weekday.innerHTML=name
+var name = new Date().toLocaleDateString("es-ES", { weekday: "long" });
+weekday.innerHTML = name;
